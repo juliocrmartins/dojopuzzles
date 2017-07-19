@@ -1,7 +1,9 @@
+import datetime
+
 from django.db import IntegrityError
 from django.test import TestCase
 
-from .models import Problem
+from .models import Problem, ProblemChosen
 
 
 class ProblemTestCase(TestCase):
@@ -81,3 +83,55 @@ class ProblemTestCase(TestCase):
             slug=problem_slug,
         )
         self.assertEqual(problem.slug, problem_slug)
+
+    def test_register_when_a_problem_is_chosen(self):
+        self.assertEqual(ProblemChosen.objects.count(), 0)
+        problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+        )
+        problem.choose()
+        self.assertEqual(
+            ProblemChosen.objects.filter(problem=problem).count(), 1)
+        problem.choose()
+        self.assertEqual(
+            ProblemChosen.objects.filter(problem=problem).count(), 2)
+
+    def test_get_number_of_times_a_problem_is_chosen(self):
+        self.assertEqual(ProblemChosen.objects.count(), 0)
+        problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+        )
+        problem.choose()
+        problem.choose()
+        problem.choose()
+        problem.choose()
+
+        self.assertEqual(problem.chosen, 4)
+
+
+class ProblemChosenTestCase(TestCase):
+
+    def setUp(self):
+        self.problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+        )
+
+    def test_create_a_problem_chosen_register(self):
+        self.assertEqual(ProblemChosen.objects.count(), 0)
+        ProblemChosen.objects.create(
+            problem=self.problem,
+        )
+        self.assertEqual(ProblemChosen.objects.count(), 1)
+
+    def test_chosen_date_defaults_to_today(self):
+        today = datetime.date.today()
+        problem_chosen = ProblemChosen.objects.create(
+            problem=self.problem,
+        )
+        self.assertEqual(problem_chosen.chosen_date, today)

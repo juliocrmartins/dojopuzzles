@@ -15,3 +15,16 @@ class Problem(models.Model):
             self.slug = slugify(self.title)
 
         super(Problem, self).save(*args, **kwargs)
+
+    def choose(self):
+        ProblemChosen.objects.create(problem=self)
+
+    @property
+    def chosen(self):
+        return ProblemChosen.objects.filter(problem=self).count()
+
+
+class ProblemChosen(models.Model):
+
+    problem = models.ForeignKey('Problem')
+    chosen_date = models.DateField(auto_now=True)
