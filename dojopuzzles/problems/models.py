@@ -14,7 +14,7 @@ class Problem(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
 
-        super(Problem, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def choose(self):
         if self.published:
