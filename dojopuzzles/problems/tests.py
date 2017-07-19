@@ -90,6 +90,7 @@ class ProblemTestCase(TestCase):
             title='Problem Title',
             description='Problem Description',
             contributor='Contributor Name',
+            published=True,
         )
         problem.choose()
         self.assertEqual(
@@ -104,6 +105,7 @@ class ProblemTestCase(TestCase):
             title='Problem Title',
             description='Problem Description',
             contributor='Contributor Name',
+            published=True,
         )
         problem.choose()
         problem.choose()
@@ -111,6 +113,16 @@ class ProblemTestCase(TestCase):
         problem.choose()
 
         self.assertEqual(problem.chosen, 4)
+
+    def test_unpublished_problem_can_not_be_chosen(self):
+        problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=False
+        )
+        with self.assertRaises(ValueError):
+            problem.choose()
 
 
 class ProblemChosenTestCase(TestCase):

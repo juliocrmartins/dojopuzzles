@@ -17,7 +17,10 @@ class Problem(models.Model):
         super(Problem, self).save(*args, **kwargs)
 
     def choose(self):
-        ProblemChosen.objects.create(problem=self)
+        if self.published:
+            ProblemChosen.objects.create(problem=self)
+        else:
+            raise ValueError('Problem must be published to be chosen')
 
     @property
     def chosen(self):
