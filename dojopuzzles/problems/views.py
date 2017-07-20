@@ -25,8 +25,9 @@ class ProblemsList(generics.ListAPIView):
         return serializer_class(*args, **kwargs)
 
 
-def problems_published(request):
-    return HttpResponse('List all published problems')
+class PublishedProblemsList(ProblemsList):
+
+    queryset = Problem.objects.filter(published=True)
 
 
 def problems_detail(request, slug):

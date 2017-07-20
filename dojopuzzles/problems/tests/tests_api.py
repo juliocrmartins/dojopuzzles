@@ -79,6 +79,32 @@ class ProblemsPublishedAPITestCase(TestCase):
         response = self.client.get(reverse('problems-published'))
         self.assertEqual(response.status_code, 200)
 
+    def test_returns_only_published_problems(self):
+        problem = Problem.objects.create(
+            title='Problem Title 1',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=False,
+        )
+        response = self.client.get(reverse('problems-published'))
+        self.assertEqual(response.json(), [])
+
+        problem.published = True
+        problem.save()
+
+        response = self.client.get(reverse('problems-published'))
+        self.assertEqual(response.json(), [
+            {
+                'title': problem.title,
+                'description': problem.description,
+                'contributor': problem.contributor,
+                'published': problem.published,
+                'slug': problem.slug,
+                'url': response.wsgi_request.build_absolute_uri(
+                    reverse('problems-detail', args=[problem.slug, ]))
+            },
+        ])
+
 
 class ProblemsDetailAPITestCase(TestCase):
 
