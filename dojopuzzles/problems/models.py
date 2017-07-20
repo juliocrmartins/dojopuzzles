@@ -26,6 +26,11 @@ class Problem(models.Model):
     def chosen(self):
         return ProblemChosen.objects.filter(problem=self).count()
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse(
+            'problems-detail', args=[self.slug, ])
+
 
 class ProblemChosen(models.Model):
 

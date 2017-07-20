@@ -1,8 +1,28 @@
 from django.http import HttpResponse
 
+from rest_framework import generics
+from rest_framework.response import Response
 
-def problems(request):
-    return HttpResponse('List all problems')
+from .models import Problem
+from .serializers import ProblemSerializer
+
+
+class ProblemsList(generics.ListAPIView):
+
+    queryset = Problem.objects.all()
+    serializer_class = ProblemSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+
+        fields = self.request.GET.get('fields', None)
+        if fields is not None:
+            fields = tuple(fields.split(','))
+
+        kwargs['context'] = self.get_serializer_context()
+        kwargs['fields'] = fields
+
+        return serializer_class(*args, **kwargs)
 
 
 def problems_published(request):

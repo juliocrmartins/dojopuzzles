@@ -3,11 +3,6 @@ from django.urls import reverse
 
 from ..models import Problem
 
-# API definition
-# /problems - List all problems
-# /problems/published - List all published problems
-# /problems/<slug> - Problem detail
-# /problems/random - Redirect to a random problem detail page
 
 class ProblemsAPITestCase(TestCase):
 
@@ -17,6 +12,62 @@ class ProblemsAPITestCase(TestCase):
     def test_problems_endpoint_exists(self):
         response = self.client.get(reverse('problems'))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+
+    def test_returns_all_problems(self):
+        problem1 = Problem.objects.create(
+            title='Problem Title 1',
+            description='Problem Description',
+            contributor='Contributor Name',
+        )
+        problem2 = Problem.objects.create(
+            title='Problem Title 2',
+            description='Problem Description',
+            contributor='Contributor Name',
+        )
+
+        response = self.client.get(reverse('problems'))
+
+        self.assertEqual(response.json(), [
+            {
+                'title': problem1.title,
+                'description': problem1.description,
+                'contributor': problem1.contributor,
+                'published': problem1.published,
+                'slug': problem1.slug,
+                'url': response.wsgi_request.build_absolute_uri(
+                    reverse('problems-detail', args=[problem1.slug, ]))
+            },
+            {
+                'title': problem2.title,
+                'description': problem2.description,
+                'contributor': problem2.contributor,
+                'published': problem2.published,
+                'slug': problem2.slug,
+                'url': response.wsgi_request.build_absolute_uri(
+                    reverse('problems-detail', args=[problem2.slug, ]))
+            },
+        ])
+
+    def test_able_to_specify_which_fields_to_return(self):
+        problem1 = Problem.objects.create(
+            title='Problem Title 1',
+            description='Problem Description',
+            contributor='Contributor Name',
+        )
+
+        response = self.client.get(
+            reverse('problems'),
+            {'fields': 'title,url'}
+        )
+
+        self.assertEqual(response.json(), [
+            {
+                'title': problem1.title,
+                'url': response.wsgi_request.build_absolute_uri(
+                    reverse('problems-detail', args=[problem1.slug, ]))
+            },
+        ])
 
 
 class ProblemsPublishedAPITestCase(TestCase):
