@@ -6,6 +6,7 @@ from .models import Problem
 
 class ProblemSerializer(serializers.ModelSerializer):
 
+    chosen = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
 
     class Meta:
@@ -26,3 +27,6 @@ class ProblemSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         return request.build_absolute_uri(
             reverse('problems-detail', args=[problem.slug, ]))
+
+    def get_chosen(self, problem):
+        return problem.chosen

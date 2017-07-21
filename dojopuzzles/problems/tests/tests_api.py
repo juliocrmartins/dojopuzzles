@@ -36,7 +36,8 @@ class ProblemsAPITestCase(TestCase):
                 'published': problem1.published,
                 'slug': problem1.slug,
                 'url': response.wsgi_request.build_absolute_uri(
-                    reverse('problems-detail', args=[problem1.slug, ]))
+                    reverse('problems-detail', args=[problem1.slug, ])),
+                'chosen': 0,
             },
             {
                 'title': problem2.title,
@@ -45,7 +46,8 @@ class ProblemsAPITestCase(TestCase):
                 'published': problem2.published,
                 'slug': problem2.slug,
                 'url': response.wsgi_request.build_absolute_uri(
-                    reverse('problems-detail', args=[problem2.slug, ]))
+                    reverse('problems-detail', args=[problem2.slug, ])),
+                'chosen': 0,
             },
         ])
 
@@ -101,7 +103,8 @@ class ProblemsPublishedAPITestCase(TestCase):
                 'published': problem.published,
                 'slug': problem.slug,
                 'url': response.wsgi_request.build_absolute_uri(
-                    reverse('problems-detail', args=[problem.slug, ]))
+                    reverse('problems-detail', args=[problem.slug, ])),
+                'chosen': 0,
             },
         ])
 
