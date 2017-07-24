@@ -114,15 +114,31 @@ class ProblemsDetailAPITestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_problems_detail_endpoint_exists(self):
-        problem = Problem.objects.create(
+        self.problem = Problem.objects.create(
             title='Problem Title',
             description='Problem Description',
             contributor='Contributor Name',
         )
+
+    def test_problems_detail_endpoint_exists(self):
         response = self.client.get(
-            reverse('problems-detail', args=[problem.slug, ]))
+            reverse('problems-detail', args=[self.problem.slug, ]))
         self.assertEqual(response.status_code, 200)
+
+    def test_should_return_problem_details(self):
+        response = self.client.get(
+            reverse('problems-detail', args=[self.problem.slug, ]))
+
+        self.assertEqual(response.json(), {
+            'title': self.problem.title,
+            'description': self.problem.description,
+            'contributor': self.problem.contributor,
+            'published': self.problem.published,
+            'slug': self.problem.slug,
+            'url': response.wsgi_request.build_absolute_uri(
+                reverse('problems-detail', args=[self.problem.slug, ])),
+            'chosen': 0,
+        })
 
 
 class ProblemsRandomAPITestCase(TestCase):
@@ -146,8 +162,42 @@ class ProblemsChooseAPITestCase(TestCase):
             title='Problem Title',
             description='Problem Description',
             contributor='Contributor Name',
+            published=True,
         )
 
-        response = self.client.get(
+        response = self.client.patch(
             reverse('problems-choose', args=[problem.slug, ]))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {})
+
+    def test_should_increase_chosen_number(self):
+        problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=True,
+        )
+        self.assertEqual(problem.chosen, 0)
+
+        self.client.patch(
+            reverse('problems-choose', args=[problem.slug, ]))
+
+        problem = Problem.objects.get(pk=problem.pk)
+        self.assertEqual(problem.chosen, 1)
+
+    def test_can_not_chose_unpublished(self):
+        problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=False
+        )
+        self.assertEqual(problem.chosen, 0)
+
+        response = self.client.patch(
+            reverse('problems-choose', args=[problem.slug, ]))
+
+        self.assertEqual(response.status_code, 403)
+
+        problem = Problem.objects.get(pk=problem.pk)
+        self.assertEqual(problem.chosen, 0)
