@@ -147,9 +147,42 @@ class ProblemsRandomAPITestCase(TestCase):
         self.client = Client()
 
     def test_problems_random_endpoint_exists(self):
+        Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=True,
+        )
+        response = self.client.get(
+            reverse('problems-random'), follow=True)
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.get(
             reverse('problems-random'))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+
+    def test_raise_404_if_no_problem_published(self):
+        Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=False,
+        )
+        response = self.client.get(
+            reverse('problems-random'), follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_redirect_to_an_existing_problem(self):
+        problem = Problem.objects.create(
+            title='Problem Title',
+            description='Problem Description',
+            contributor='Contributor Name',
+            published=True,
+        )
+        response = self.client.get(
+            reverse('problems-random'), follow=True)
+        self.assertRedirects(
+            response, reverse('problems-detail', args=[problem.slug, ]))
 
 
 class ProblemsChooseAPITestCase(TestCase):

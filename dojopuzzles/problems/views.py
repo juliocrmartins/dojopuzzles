@@ -1,5 +1,7 @@
-from django.http import HttpResponse, JsonResponse
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, \
+    HttpResponseNotFound, JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from rest_framework import generics
 
@@ -46,6 +48,13 @@ class ProblemsDetail(generics.RetrieveUpdateAPIView):
             return JsonResponse({})
 
 
-def problems_random(request):
-    return HttpResponse(
-        'Redirects to a random problem')
+class ProblemsRandom(generics.RetrieveAPIView):
+
+    def get(self, request, *args, **kwargs):
+        problem = Problem.objects.filter(published=True).order_by('?').first()
+
+        if problem is None:
+            return HttpResponseNotFound()
+
+        return redirect(
+            reverse('problems-detail', args=[problem.slug, ]))
