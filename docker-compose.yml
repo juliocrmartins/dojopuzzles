@@ -13,7 +13,7 @@ services:
   dojopuzzles_api:
     build: ./api
     container_name: dojopuzzles_api
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn mydjango.wsgi -b 0.0.0.0:8000"
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn dojopuzzles.wsgi -b 0.0.0.0:8000"
     depends_on:
       - db
     volumes:
