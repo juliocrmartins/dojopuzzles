@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  dojopuzzles_api:
+    build: ./api
+    container_name: dojopuzzles_api
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn mydjango.wsgi -b 0.0.0.0:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./api:/dojopuzzles_api
+    expose:
+      - "8000"
+    environment:
+      - VIRTUAL_HOST=beta.dojopupzzles.com
+
+  db:
+    image: postgres:latest
+    container_name: ps01
+
