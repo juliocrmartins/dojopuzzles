@@ -10,6 +10,9 @@ class Problem(models.Model):
     slug = models.SlugField(max_length=100, unique=True)
     published = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.title
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
