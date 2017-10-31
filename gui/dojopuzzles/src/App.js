@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
+import axios from 'axios'
 
 import Footer from './components/footer'
 import Header from './components/header'
@@ -18,14 +18,15 @@ class App extends Component {
   }
 
   onFindProblemClick = () => {
-    // TODO get random problem from API
-
-    this.setState({
-      showingProblem: {
-        title: 'Problem Title ' + Math.random(),
-        description: '### This is a header\n\nAnd this is a paragraph',
-      }
-    })
+    axios.get('http://beta.dojopuzzles.com/problems/random')
+         .then(response => {
+            this.setState({
+              showingProblem: {
+                title: response.data.title,
+                description: response.data.description,
+              }
+          })
+        })
   }
 
   onProblemSelectedClick = () => {
@@ -38,7 +39,7 @@ class App extends Component {
     return (
       <div className="container">
         <Header />
-        
+
         <ProblemSelector
           onProblemSelectedClick={this.onProblemSelectedClick}
           onFindProblemClick={this.onFindProblemClick}
