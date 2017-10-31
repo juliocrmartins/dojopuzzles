@@ -31,3 +31,13 @@ services:
       - ./api:/dojopuzzles_api
     expose:
       - "8000"
+
+  dojopuzzles_gui:
+    build:
+      context: ./gui
+    env_file:
+      - dojopuzzles_gui.env
+    volumes:
+      - ./gui/dojopuzzles/build:/usr/share/nginx/html
+    expose:
+      - "9000"
