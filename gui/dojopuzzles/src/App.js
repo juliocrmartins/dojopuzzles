@@ -18,7 +18,7 @@ class App extends Component {
   }
 
   onFindProblemClick = () => {
-    axios.get('http://beta.dojopuzzles.com/problems/random')
+    axios.get('http://api.dojopuzzles.com/problems/random')
          .then(response => {
             this.setState({
               showingProblem: {
