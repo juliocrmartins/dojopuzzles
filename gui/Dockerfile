@@ -1,1 +1,9 @@
-FROM nginx:1.13.6-alpine
+FROM node:latest
+ENV NPM_CONFIG_LOGLEVEL warn
+RUN mkdir /var/build && cd /var/build
+WORKDIR /var/build
+COPY ./dojopuzzles .
+RUN npm run build --production
+RUN npm install -g serve
+CMD serve -s build
+EXPOSE 9000

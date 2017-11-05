@@ -35,9 +35,11 @@ services:
   dojopuzzles_gui:
     build:
       context: ./gui
+    depends_on:
+      - dojopuzzles_api
     env_file:
       - dojopuzzles_gui.env
     volumes:
-      - ./gui/dojopuzzles/build:/usr/share/nginx/html
+      - ./gui/dojopuzzles:/var/build
     expose:
       - "9000"
