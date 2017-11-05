@@ -5,4 +5,4 @@ WORKDIR /var/build
 COPY ./dojopuzzles .
 RUN npm install -g serve
 CMD serve -s build
-EXPOSE 9000
+EXPOSE 5000

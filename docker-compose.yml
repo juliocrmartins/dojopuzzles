@@ -42,4 +42,4 @@ services:
     volumes:
       - ./gui/dojopuzzles:/var/build
     expose:
-      - "9000"
+      - "5000"
