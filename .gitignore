@@ -3,3 +3,5 @@
 local_settings.py
 *.db
 db.sqlite3
+.venv
+*.env
